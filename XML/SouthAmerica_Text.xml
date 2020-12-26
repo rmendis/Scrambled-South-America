@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SouthAmerica_Text -->
+<!-- Author: blkbutterfly74 -->
+<!-- DateCreated: 1/20/2018 10:33:04 AM -->
+<GameData>
+	<FrontEndText>
+
+		<!-- Texts for Maps -->
+		<Row Tag="LOC_MAP_SOUTH_AMERICA_NAME">
+			<Text>Scrambled South America</Text>
+		</Row>
+		<Row Tag="LOC_MAP_SOUTH_AMERICA_DESCRIPTION">
+			<Text>An internally randomized map of South America.</Text>
+		</Row>
+
+	</FrontEndText>
+</GameData>

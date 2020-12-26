@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SouthAmerica -->
+<!-- Author: blkbutterfly74 -->
+<!-- DateCreated: 8/14/2017 11:19:55 PM -->
+<GameInfo>
+	<GlobalParameters>
+		<Replace Name="RIVER_SOURCE_RANGE_DEFAULT" Value="1" />
+
+		<Replace Name="RIVER_PLOTS_PER_RIVER_EDGE_DEFAULT" Value="3" />
+
+		<!-- less lakes -->
+		<Replace Name="LAKE_PLOT_RANDOM" Value="60" />
+	</GlobalParameters>
+</GameInfo>
