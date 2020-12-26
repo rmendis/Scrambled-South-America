@@ -305,25 +305,34 @@ function AddFeatures()
 		rainfall = 1 + TerrainBuilder.GetRandomNumber(3, "Random Rainfall - Lua");
 	end
 
-	local args = {rainfall = rainfall, iJunglePercent = 65, iMarshPercent = 15, iForestPercent = 7, iReefPercent = 10}	-- jungle & marsh max coverage
+	local args = {rainfall = rainfall, iJunglePercent = 75, iMarshPercent = 10, iForestPercent = 7, iReefPercent = 10}	-- jungle & marsh max coverage
 	featuregen = FeatureGenerator.Create(args);
 
 	featuregen:AddFeatures(true, true);  --second parameter is whether or not rivers start inland);
 
-	-- add extra rainforest more densely at center
+	--[[
+	-- Only keep floodplain far away from continent center
 	for iX = 0, g_iW - 1 do
 		for iY = 0, g_iH - 1 do
 			local index = (iY * g_iW) + iX;
 			local plot = Map.GetPlot(iX, iY);
-			local iDistanceFromCenter = Map.GetPlotDistance (iX, iY, g_CenterX, g_CenterY);
 
-			-- inverse of Australia floolplain logic
-			if (TerrainBuilder.GetRandomNumber(25, "Resource Placement Score Adjust") >= iDistanceFromCenter) then
-				featuregen:AddJunglesAtPlot(plot, iX, iY);
+			if (plot:GetFeatureType() == g_FEATURE_FLOODPLAINS or 
+				plot:GetFeatureType() == g_FEATURE_FLOODPLAINS_PLAINS or
+				plot:GetFeatureType() == g_FEATURE_FLOODPLAINS_GRASSLAND) then
+				local iDistanceFromCenter = Map.GetPlotDistance (iX, iY, g_CenterX, g_CenterY);
+
+				-- less chance to add floodplains when get 20 tiles out.  Linear scale out to there
+				if (TerrainBuilder.GetRandomNumber(40, "Resource Placement Score Adjust") >= iDistanceFromCenter) then
+					TerrainBuilder.SetFeatureType(plot, -1);
+					featuregen:AddJunglesAtPlot(plot, iX, iY);
+				end
 			end
 		end
 	end
+	--]]
 end
+
 ------------------------------------------------------------------------------
 function GenerateTerrainTypesSouthAmerica(plotTypes, iW, iH, iFlags, bNoCoastalMountains)
 	print("Generating Terrain Types");
@@ -333,30 +342,18 @@ function GenerateTerrainTypesSouthAmerica(plotTypes, iW, iH, iFlags, bNoCoastalM
 	local fracYExp = -1;
 	local grain_amount = 3;
 
-	grass = Fractal.Create(iW, iH, 
+	america = Fractal.Create(iW, iH, 
 									grain_amount, iFlags, 
 									fracXExp, fracYExp);
 									
-	iGrassTop = grass:GetHeight(100);
-
-	plains = Fractal.Create(iW, iH, 
-									grain_amount, iFlags, 
-									fracXExp, fracYExp);
+	local iGrassTop = america:GetHeight(100);
 																		
-	iPlainsTop = grass:GetHeight(100);
-	iPlainsBottom = grass:GetHeight(10);
-
-	tundra = Fractal.Create(iW, iH, 
-									grain_amount, iFlags, 
-									fracXExp, fracYExp);
+	local iPlainsTop = america:GetHeight(100);
+	local iPlainsBottom = america:GetHeight(10);
 																		
-	iTundraTop = tundra:GetHeight(85);
-
-	snow = Fractal.Create(iW, iH, 
-									grain_amount, iFlags, 
-									fracXExp, fracYExp);
+	local iTundraTop = america:GetHeight(85);
 																		
-	iSnowTop = tundra:GetHeight(100);
+	local iSnowTop = america:GetHeight(100);
 
 	for iX = 0, iW - 1 do
 		for iY = 0, iH - 1 do
@@ -383,58 +380,56 @@ function GenerateTerrainTypesSouthAmerica(plotTypes, iW, iH, iFlags, bNoCoastalM
 			local iV = TerrainBuilder.GetRandomNumber(8, "Random variance");
 			local lat = -((iH/2) - iY + iV)/(iH/2);		-- inverted + a rnd to make the division natural
 
-			local grassVal = grass:GetHeight(iX, iY);
-			local plainsVal = plains:GetHeight(iX, iY);
-			local tundraVal = tundra:GetHeight(iX, iY);
-			local snowVal = tundra:GetHeight(iX, iY);
+			local americaVal = america:GetHeight(iX, iY);
 
 			-- Amazon 
 			if (lat > -0.72) then
-				local iGrassBottom = grass:GetHeight(iDistanceFromCenter/(iH/2) * 100);
+				local iGrassBottom = america:GetHeight(90);
+				iPlainsTop = iGrassBottom;
 
 				if (plotTypes[index] == g_PLOT_TYPE_MOUNTAIN) then
 					terrainTypes[index] = g_TERRAIN_TYPE_DESERT_MOUNTAIN;
 
-					if ((grassVal >= iGrassBottom) and (grassVal <= iGrassTop)) then
+					if ((americaVal >= iGrassBottom) and (americaVal <= iGrassTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_GRASS_MOUNTAIN;
-					elseif ((plainsVal >= iPlainsBottom) and (plainsVal <= iPlainsTop)) then
+					elseif ((americaVal >= iPlainsBottom) and (americaVal <= iPlainsTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_PLAINS_MOUNTAIN;
 					end
 
 				elseif (plotTypes[index] ~= g_PLOT_TYPE_OCEAN) then
 					terrainTypes[index] = g_TERRAIN_TYPE_DESERT;
 		
-					if ((grassVal >= iGrassBottom) and (grassVal <= iGrassTop)) then
+					if ((americaVal >= iGrassBottom) and (americaVal <= iGrassTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_GRASS;
-					elseif ((plainsVal >= iPlainsBottom) and (plainsVal <= iPlainsTop)) then
+					elseif ((americaVal >= iPlainsBottom) and (americaVal <= iPlainsTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_PLAINS;
 					end
 				end
 
 			-- patagonia
 			else 
-				local iTundraBottom = tundra:GetHeight((1 - iDistanceFromCenter/(iH/2)) * 100);
-				local iSnowBottom = snow:GetHeight((1 - iDistanceFromCenter/(iH/2)) * 100);
+				local iTundraBottom = america:GetHeight((1 - iDistanceFromCenter/(iH/2)) * 100);
+				local iSnowBottom = america:GetHeight((1 - iDistanceFromCenter/(iH/2)) * 100);
 
 				if (plotTypes[index] == g_PLOT_TYPE_MOUNTAIN) then
 					terrainTypes[index] = g_TERRAIN_TYPE_DESERT_MOUNTAIN;
 
-					if ((tundraVal >= iTundraBottom) and (tundraVal <= iTundraTop)) then
+					if ((americaVal >= iTundraBottom) and (americaVal <= iTundraTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_TUNDRA_MOUNTAIN;
-					elseif ((plainsVal >= iPlainsBottom) and (plainsVal <= iPlainsTop)) then
+					elseif ((americaVal >= iPlainsBottom) and (americaVal <= iPlainsTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_PLAINS_MOUNTAIN;
-					elseif ((snowVal >= iSnowBottom) and (snowVal <= iSnowTop)) then
+					elseif ((americaVal >= iSnowBottom) and (americaVal <= iSnowTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_SNOW_MOUNTAIN;
 					end
 
 				elseif (plotTypes[index] ~= g_PLOT_TYPE_OCEAN) then
 					terrainTypes[index] = g_TERRAIN_TYPE_DESERT;
 				
-					if ((tundraVal >= iTundraBottom) and (tundraVal <= iTundraTop)) then
+					if ((americaVal >= iTundraBottom) and (americaVal <= iTundraTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_TUNDRA;
-					elseif ((plainsVal >= iPlainsBottom) and (plainsVal <= iPlainsTop)) then
+					elseif ((americaVal >= iPlainsBottom) and (americaVal <= iPlainsTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_PLAINS;
-					elseif ((snowVal >= iSnowBottom) and (snowVal <= iSnowTop)) then
+					elseif ((americaVal >= iSnowBottom) and (americaVal <= iSnowTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_SNOW;
 					end
 				end
@@ -531,14 +526,14 @@ function FeatureGenerator:AddIceToMap()
 		local iPercentNeeded = 100 * iPermanentIceTiles / iWaterTilesOnEdges;
 
 		for x = 0, self.iGridW - 1, 1 do
-			for y = self.iGridH - 1, 0, -1 do
-				local i = y * self.iGridW + x;
-				local plot = Map.GetPlotByIndex(i);
-				if (plot ~= nil) then
-					if(TerrainBuilder.CanHaveFeature(plot, g_FEATURE_ICE) == true and IsAdjacentToLandPlot(x, y) == false) then
-						if (TerrainBuilder.GetRandomNumber(100, "Permanent Ice") <= iPercentNeeded) then
-							AddIceAtPlot(plot, x, y, -1); 
-						end
+			y = 0;
+			local i = y * self.iGridW + x;
+			local plot = Map.GetPlotByIndex(i);
+			if (plot ~= nil) then
+				if(TerrainBuilder.CanHaveFeature(plot, g_FEATURE_ICE) == true and IsAdjacentToLandPlot(x, y) == false) then
+					if (TerrainBuilder.GetRandomNumber(100, "Permanent Ice") <= iPercentNeeded) then
+						TerrainBuilder.SetFeatureType(plot, g_FEATURE_ICE);
+						TerrainBuilder.AddIce(plot:GetIndex(), -1); 
 					end
 				end
 			end
@@ -618,10 +613,10 @@ function AddIceAtPlot(plot, iX, iY, iE)
 		if(iScore > 130) then
 			TerrainBuilder.SetFeatureType(plot, g_FEATURE_ICE);
 			TerrainBuilder.AddIce(plot:GetIndex(), iE); 
+			return true;
 		end
-
-		return true;
 	end
+	return false;
 end
 
 ------------------------------------------------------------------------------
@@ -655,6 +650,78 @@ function FeatureGenerator:AddReefAtPlot(plot, iX, iY)
 				end
 		end
 	end
+end
+
+-- override: southern forest bias
+function FeatureGenerator:AddForestsAtPlot(plot, iX, iY)
+	--Forest Check. First see if it can place the feature.
+	
+	if(TerrainBuilder.CanHaveFeature(plot, g_FEATURE_FOREST)) then
+		if(math.ceil(self.iForestCount * 100 / self.iNumLandPlots) <= self.iForestMaxPercent) then
+			--Weight based on adjacent plots if it has more than 3 start subtracting
+			local iScore = 3 * (1 - iY/g_iH) * 100;
+			local iAdjacent = TerrainBuilder.GetAdjacentFeatureCount(plot, g_FEATURE_FOREST);
+
+			if(iAdjacent == 0 ) then
+				iScore = iScore;
+			elseif(iAdjacent == 1) then
+				iScore = iScore + 50;
+			elseif (iAdjacent == 2 or iAdjacent == 3) then
+				iScore = iScore + 150;
+			elseif (iAdjacent == 4) then
+				iScore = iScore - 50;
+			else
+				iScore = iScore - 200;
+			end
+				
+			if(TerrainBuilder.GetRandomNumber(300, "Resource Placement Score Adjust") <= iScore) then
+				TerrainBuilder.SetFeatureType(plot, g_FEATURE_FOREST);
+				self.iForestCount = self.iForestCount + 1;
+			end
+		end
+	end
+end
+
+-- override: more northern jungle
+function FeatureGenerator:AddJunglesAtPlot(plot, iX, iY)
+	--Jungle Check. First see if it can place the feature.
+	if(TerrainBuilder.CanHaveFeature(plot, g_FEATURE_JUNGLE)) then
+		if(math.ceil(self.iJungleCount * 100 / self.iNumLandPlots) <= self.iJungleMaxPercent) then
+
+			--Weight based on adjacent plots if it has more than 3 start subtracting
+			local iScore = 400 * iY;
+			local iAdjacent = TerrainBuilder.GetAdjacentFeatureCount(plot, g_FEATURE_JUNGLE);
+
+			if(iAdjacent == 0 ) then
+				iScore = iScore;
+			elseif(iAdjacent == 1) then
+				iScore = iScore + 50;
+			elseif (iAdjacent == 2 or iAdjacent == 3) then
+				iScore = iScore + 150;
+			elseif (iAdjacent == 4) then
+				iScore = iScore - 50;
+			else
+				iScore = iScore - 200;
+			end
+
+			if(TerrainBuilder.GetRandomNumber(100, "Resource Placement Score Adjust") <= iScore) then
+				TerrainBuilder.SetFeatureType(plot, g_FEATURE_JUNGLE);
+				local terrainType = plot:GetTerrainType();
+
+				if(terrainType == g_TERRAIN_TYPE_PLAINS_HILLS or terrainType == g_TERRAIN_TYPE_GRASS_HILLS) then
+					TerrainBuilder.SetTerrainType(plot, g_TERRAIN_TYPE_PLAINS_HILLS);
+				else
+					TerrainBuilder.SetTerrainType(plot, g_TERRAIN_TYPE_PLAINS);
+				end
+
+				self.iJungleCount = self.iJungleCount + 1;
+				return true;
+			end
+
+		end
+	end
+
+	return false
 end
 
 ------------------------------------------------------------------------------

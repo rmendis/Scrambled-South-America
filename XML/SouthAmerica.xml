@@ -4,7 +4,7 @@
 <!-- DateCreated: 8/14/2017 11:19:55 PM -->
 <GameInfo>
 	<GlobalParameters>
-		<Replace Name="RIVER_SOURCE_RANGE_DEFAULT" Value="1" />
+		<Replace Name="RIVER_SOURCE_RANGE_DEFAULT" Value="2" />
 
 		<Replace Name="RIVER_PLOTS_PER_RIVER_EDGE_DEFAULT" Value="3" />
 
