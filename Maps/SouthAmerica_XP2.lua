@@ -532,8 +532,7 @@ function FeatureGenerator:AddIceToMap()
 			if (plot ~= nil) then
 				if(TerrainBuilder.CanHaveFeature(plot, g_FEATURE_ICE) == true and IsAdjacentToLandPlot(x, y) == false) then
 					if (TerrainBuilder.GetRandomNumber(100, "Permanent Ice") <= iPercentNeeded) then
-						TerrainBuilder.SetFeatureType(plot, g_FEATURE_ICE);
-						TerrainBuilder.AddIce(plot:GetIndex(), -1); 
+						AddIceAtPlot(plot, x, y, -1); 
 					end
 				end
 			end
@@ -585,7 +584,7 @@ function FeatureGenerator:AddIceToMap()
 					end
 					if (TerrainBuilder.GetRandomNumber(100, "Permanent Ice") <= iFinalPercentNeeded) then
 					    local plot = Map.GetPlotByIndex(targetPlot.PlotIndex);
-						AddIceAtPlot(plot, x, y, kPhaseDetails.RandomEventEnum); 
+						AddIceAtPlot(plot, plot:GetX(), plot:GetY(), kPhaseDetails.RandomEventEnum); 
 					end
 				end
 			end
