@@ -88,7 +88,7 @@ function GenerateMap()
 	AddFeaturesFromContinents();
 	MarkCoastalLowlands();
 	
-	resourcesConfig = MapConfiguration.GetValue("resources");
+	local resourcesConfig = MapConfiguration.GetValue("resources");
 	local args = {
 		resources = resourcesConfig,
 		LuxuriesPerRegion = 7,
