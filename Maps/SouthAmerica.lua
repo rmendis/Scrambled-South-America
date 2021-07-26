@@ -389,7 +389,7 @@ function GenerateTerrainTypesSouthAmerica(plotTypes, iW, iH, iFlags, bNoCoastalM
 
 			-- Amazon
 			else 		
-				local iGrassBottom = america:GetHeight(90);
+				local iGrassBottom = america:GetHeight(40);
 				iPlainsTop = iGrassBottom;
 
 				if (plotTypes[index] == g_PLOT_TYPE_MOUNTAIN) then
