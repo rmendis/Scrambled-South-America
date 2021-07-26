@@ -17,8 +17,9 @@
     <AssemblyName>Scrambled South America</AssemblyName>
     <RootNamespace>Scrambled South America</RootNamespace>
     <FrontEndActionData><![CDATA[<FrontEndActions><UpdateDatabase id="UpdateConfig"><File>SQL/Config.sql</File></UpdateDatabase><UpdateText id="UpdateText"><File>XML/SouthAmerica_Text.xml</File></UpdateText></FrontEndActions>]]></FrontEndActionData>
-    <InGameActionData><![CDATA[<InGameActions><UpdateDatabase id="AddSouthAmericaParams"><File>XML/SouthAmerica.xml</File></UpdateDatabase><ImportFiles id="ImportMaps"><File>Maps/SouthAmerica.lua</File><File>Maps/SouthAmerica_XP2.lua</File></ImportFiles></InGameActions>]]></InGameActionData>
+    <InGameActionData><![CDATA[<InGameActions><UpdateDatabase id="UpdateSouthAmericaParams"><Criteria>SouthAmericaMapInUse</Criteria><File>XML/SouthAmerica.xml</File></UpdateDatabase><ImportFiles id="ImportMaps"><File>Maps/SouthAmerica.lua</File><File>Maps/SouthAmerica_XP2.lua</File></ImportFiles><UpdateDatabase id="UpdateSouthAmericaParams_XP2"><Criteria>SouthAmericaXP2MapInUseMapInUse</Criteria><File>XML/SouthAmerica.xml</File></UpdateDatabase></InGameActions>]]></InGameActionData>
     <CompatibleVersions>1.2,2.0</CompatibleVersions>
+    <ActionCriteriaData><![CDATA[<ActionCriteria><Criteria id="SouthAmericaMapInUseMapInUse"><MapInUse>{19ea3d74-5373-4315-89a8-214f76b00f34}Maps/SouthAmerica.lua</MapInUse></Criteria><Criteria id="SouthAmericaXP2MapInUseMapInUse"><MapInUse>{19ea3d74-5373-4315-89a8-214f76b00f34}Maps/SouthAmerica_XP2.lua</MapInUse></Criteria></ActionCriteria>]]></ActionCriteriaData>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Default' ">
     <OutputPath>.</OutputPath>
