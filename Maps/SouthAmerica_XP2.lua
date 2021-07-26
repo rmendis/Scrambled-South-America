@@ -574,7 +574,7 @@ end
 function AddIceAtPlot(plot, iX, iY, iE)
 	local lat = GetLatitudeAtPlot(america, iX, iY);
 	
-	if (lat > 0.81 and iY < g_CenterY) then
+	if (lat > 0.9 and iY < g_CenterY) then
 		local iScore = TerrainBuilder.GetRandomNumber(100, "Resource Placement Score Adjust");
 
 		iScore = iScore + lat * 100;
