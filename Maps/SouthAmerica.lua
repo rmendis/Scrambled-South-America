@@ -22,6 +22,7 @@ local g_continentsFrac = nil;
 local g_iNumTotalLandTiles = 0; 
 local g_CenterX = 18;
 local g_CenterY = 62;
+local america = nil;
 
 -------------------------------------------------------------------------------
 function GenerateMap()
@@ -354,37 +355,12 @@ function GenerateTerrainTypesSouthAmerica(plotTypes, iW, iH, iFlags, bNoCoastalM
 			local index = (iY * iW) + iX;
 
 			local iDistanceFromCenter = Map.GetPlotDistance (iX, iY, g_CenterX, g_CenterY);
-			local iV = TerrainBuilder.GetRandomNumber(8, "Random variance");
-			local lat = -((iH/2) - iY + iV)/(iH/2);		-- inverted + a rnd to make the division natural
+			local lat = GetLatitudeAtPlot(america, iX, iY);
 
 			local americaVal = america:GetHeight(iX, iY);
 
-			-- Amazon 
-			if (lat > -0.72) then
-				local iGrassBottom = america:GetHeight(90);
-				iPlainsTop = iGrassBottom;
-
-				if (plotTypes[index] == g_PLOT_TYPE_MOUNTAIN) then
-					terrainTypes[index] = g_TERRAIN_TYPE_DESERT_MOUNTAIN;
-
-					if ((americaVal >= iGrassBottom) and (americaVal <= iGrassTop)) then
-						terrainTypes[index] = g_TERRAIN_TYPE_GRASS_MOUNTAIN;
-					elseif ((americaVal >= iPlainsBottom) and (americaVal <= iPlainsTop)) then
-						terrainTypes[index] = g_TERRAIN_TYPE_PLAINS_MOUNTAIN;
-					end
-
-				elseif (plotTypes[index] ~= g_PLOT_TYPE_OCEAN) then
-					terrainTypes[index] = g_TERRAIN_TYPE_DESERT;
-		
-					if ((americaVal >= iGrassBottom) and (americaVal <= iGrassTop)) then
-						terrainTypes[index] = g_TERRAIN_TYPE_GRASS;
-					elseif ((americaVal >= iPlainsBottom) and (americaVal <= iPlainsTop)) then
-						terrainTypes[index] = g_TERRAIN_TYPE_PLAINS;
-					end
-				end
-
 			-- patagonia
-			else 
+			if (lat > 0.72 and iY < g_CenterY) then
 				local iTundraBottom = america:GetHeight((1 - iDistanceFromCenter/(iH/2)) * 100);
 				local iSnowBottom = america:GetHeight((1 - iDistanceFromCenter/(iH/2)) * 100);
 
@@ -408,6 +384,30 @@ function GenerateTerrainTypesSouthAmerica(plotTypes, iW, iH, iFlags, bNoCoastalM
 						terrainTypes[index] = g_TERRAIN_TYPE_PLAINS;
 					elseif ((americaVal >= iSnowBottom) and (americaVal <= iSnowTop)) then
 						terrainTypes[index] = g_TERRAIN_TYPE_SNOW;
+					end
+				end
+
+			-- Amazon
+			else 		
+				local iGrassBottom = america:GetHeight(90);
+				iPlainsTop = iGrassBottom;
+
+				if (plotTypes[index] == g_PLOT_TYPE_MOUNTAIN) then
+					terrainTypes[index] = g_TERRAIN_TYPE_DESERT_MOUNTAIN;
+
+					if ((americaVal >= iGrassBottom) and (americaVal <= iGrassTop)) then
+						terrainTypes[index] = g_TERRAIN_TYPE_GRASS_MOUNTAIN;
+					elseif ((americaVal >= iPlainsBottom) and (americaVal <= iPlainsTop)) then
+						terrainTypes[index] = g_TERRAIN_TYPE_PLAINS_MOUNTAIN;
+					end
+
+				elseif (plotTypes[index] ~= g_PLOT_TYPE_OCEAN) then
+					terrainTypes[index] = g_TERRAIN_TYPE_DESERT;
+		
+					if ((americaVal >= iGrassBottom) and (americaVal <= iGrassTop)) then
+						terrainTypes[index] = g_TERRAIN_TYPE_GRASS;
+					elseif ((americaVal >= iPlainsBottom) and (americaVal <= iPlainsTop)) then
+						terrainTypes[index] = g_TERRAIN_TYPE_PLAINS;
 					end
 				end
 			end
@@ -445,10 +445,9 @@ end
 
 ------------------------------------------------------------------------------
 function FeatureGenerator:AddIceAtPlot(plot, iX, iY)
-	local iV = TerrainBuilder.GetRandomNumber(12, "Random variance");
-	lat = (iY - self.iGridH/2 + iV)/(self.iGridH/2);	-- variance to make a more natural looking ice shelf
+	local lat = GetLatitudeAtPlot(america, iX, iY);
 	
-	if (lat < -0.81) then
+	if (lat > 0.9 and iY < g_CenterY) then
 		local iScore = TerrainBuilder.GetRandomNumber(100, "Resource Placement Score Adjust");
 
 		iScore = iScore + math.abs(lat) * 100;
