@@ -306,7 +306,7 @@ function AddFeatures()
 		rainfall = 1 + TerrainBuilder.GetRandomNumber(3, "Random Rainfall - Lua");
 	end
 
-	local args = {rainfall = rainfall, iJunglePercent = 75, iMarshPercent = 10, iForestPercent = 7, iReefPercent = 10}	-- jungle & marsh max coverage
+	local args = {rainfall = rainfall, iJunglePercent = 70, iMarshPercent = 10, iForestPercent = 20, iReefPercent = 10}	-- jungle & marsh max coverage
 	featuregen = FeatureGenerator.Create(args);
 
 	featuregen:AddFeatures(true, true);  --second parameter is whether or not rivers start inland);
@@ -635,7 +635,7 @@ function FeatureGenerator:AddForestsAtPlot(plot, iX, iY)
 	if(TerrainBuilder.CanHaveFeature(plot, g_FEATURE_FOREST)) then
 		if(math.ceil(self.iForestCount * 100 / self.iNumLandPlots) <= self.iForestMaxPercent) then
 			--Weight based on adjacent plots if it has more than 3 start subtracting
-			local iScore = 3 * (1 - iY/g_iH) * 100;
+			local iScore = 300 * (1 - iY/g_iH);
 			local iAdjacent = TerrainBuilder.GetAdjacentFeatureCount(plot, g_FEATURE_FOREST);
 
 			if(iAdjacent == 0 ) then

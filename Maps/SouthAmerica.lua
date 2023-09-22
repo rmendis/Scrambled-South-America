@@ -305,7 +305,7 @@ function AddFeatures()
 		rainfall = 1 + TerrainBuilder.GetRandomNumber(3, "Random Rainfall - Lua");
 	end
 
-	local args = {rainfall = rainfall, iJunglePercent = 65, iMarshPercent = 15, iForestPercent = 7, iReefPercent = 10}	-- jungle & marsh max coverage
+	local args = {rainfall = rainfall, iJunglePercent = 70, iMarshPercent = 10, iForestPercent = 20, iReefPercent = 10}	-- jungle & marsh max coverage
 	local featuregen = FeatureGenerator.Create(args);
 
 	featuregen:AddFeatures();
